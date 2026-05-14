@@ -304,7 +304,8 @@ class MenuUI:
                 if r.bottom < L["list_top"] or r.y > L["list_bottom"]:
                     continue
                 key = f"main_{i}"
-                self._last_rects[key] = r
+                if not locked:
+                    self._last_rects[key] = r
                 hov = not locked and r.collidepoint(mouse_pos or (0, 0))
                 if hov:
                     self._hovered = key
@@ -353,7 +354,8 @@ class MenuUI:
             label = f"{i + 1}.  {spec.title}"
             r = pygame.Rect(bx, y + i * 56, 520, 48)
             key = f"bonus_{i}"
-            self._last_rects[key] = r
+            if not locked:
+                self._last_rects[key] = r
             hov = not locked and r.collidepoint(mouse_pos or (0, 0))
             if hov:
                 self._hovered = key

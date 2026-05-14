@@ -14,6 +14,8 @@ class LevelSpec:
     enemy_charge_add: float
     arena_theme: str
     enemy_spawn_x: float
+    player_spawn_x: float = 300.0
+    second_enemy_spawn_x: float | None = None
 
 
 def default_level():
@@ -23,8 +25,8 @@ def default_level():
 MAIN_LEVELS = (
     LevelSpec(
         key="m1",
-        title="Opening bout",
-        tagline="learn the ropes",
+        title="Rookie Ramp",
+        tagline="Where fresh faces learn to take a hit.",
         is_bonus=False,
         gravity=(0, 108),
         player_energy=(100, 20, 9, 16, 28),
@@ -36,8 +38,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m2",
-        title="Undercard",
-        tagline="crowd is warming up",
+        title="Canvas Clash",
+        tagline="The mat is soft… the opponents aren't.",
         is_bonus=False,
         gravity=(0, 108),
         player_energy=(100, 19, 8, 16, 28),
@@ -49,8 +51,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m3",
-        title="Main event",
-        tagline="they read your patterns",
+        title="Turnbuckle Trial",
+        tagline="Corners get dangerous real fast.",
         is_bonus=False,
         gravity=(0, 112),
         player_energy=(100, 18, 8, 16, 28),
@@ -62,8 +64,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m4",
-        title="Title shot",
-        tagline="no mistakes",
+        title="Steel Chain Showdown",
+        tagline="No escape. No excuses",
         is_bonus=False,
         gravity=(0, 115),
         player_energy=(95, 17, 7, 16, 28),
@@ -75,8 +77,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m5",
-        title="Champion",
-        tagline="everything turned up",
+        title="Titan Tunnel",
+        tagline="Only true gaints survive.",
         is_bonus=False,
         gravity=(0, 118),
         player_energy=(90, 16, 7, 16, 28),
@@ -88,8 +90,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m6",
-        title="Dynasty defense",
-        tagline="crowd noise, tighter windows",
+        title="Suplex Station",
+        tagline="Where every throw tests your balance and your bravery",
         is_bonus=False,
         gravity=(0, 120),
         player_energy=(88, 15, 7, 15, 28),
@@ -101,8 +103,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m7",
-        title="Last stand",
-        tagline="they do not tire",
+        title="Rumble Road",
+        tagline="Every step forward earns a bruise",
         is_bonus=False,
         gravity=(0, 122),
         player_energy=(85, 14, 6, 15, 28),
@@ -114,8 +116,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m8",
-        title="Hall of pain",
-        tagline="leave nothing in the tank",
+        title="Lockdown Lair",
+        tagline="Submission specialists own this place",
         is_bonus=False,
         gravity=(0, 125),
         player_energy=(82, 14, 6, 15, 27),
@@ -127,8 +129,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m9",
-        title="Iron curtain",
-        tagline="nowhere to hide on the mat",
+        title="Brawler’s Balcony",
+        tagline="High ground, higher stakes",
         is_bonus=False,
         gravity=(0, 126),
         player_energy=(80, 13, 6, 15, 27),
@@ -140,8 +142,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m10",
-        title="Bloodline",
-        tagline="one mistake ends the run",
+        title="Mayhem Mountain",
+        tagline="Chaos climbs with you",
         is_bonus=False,
         gravity=(0, 128),
         player_energy=(78, 13, 6, 14, 26),
@@ -153,8 +155,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m11",
-        title="Judgment night",
-        tagline="lights low, stakes high",
+        title="Champion’s Gauntlet",
+        tagline="One ring. Many legends. Zero mercy",
         is_bonus=False,
         gravity=(0, 130),
         player_energy=(76, 12, 5, 14, 26),
@@ -166,8 +168,8 @@ MAIN_LEVELS = (
     ),
     LevelSpec(
         key="m12",
-        title="Forever champion",
-        tagline="the belt stays or shatters here",
+        title="The Apex Arena",
+        tagline="The final bell decides everything",
         is_bonus=False,
         gravity=(0, 132),
         player_energy=(74, 12, 5, 14, 25),
@@ -183,7 +185,7 @@ BONUS_LEVELS = (
     LevelSpec(
         key="b1",
         title="Moon mat",
-        tagline="low gravity chaos",
+        tagline="Low gravity",
         is_bonus=True,
         gravity=(0, 62),
         player_energy=(110, 22, 14, 15, 26),
@@ -195,8 +197,8 @@ BONUS_LEVELS = (
     ),
     LevelSpec(
         key="b2",
-        title="Steel cage rush",
-        tagline="heavy floor, fast rival",
+        title="Steel Rush",
+        tagline="Fast rival",
         is_bonus=True,
         gravity=(0, 145),
         player_energy=(100, 18, 8, 16, 28),
@@ -209,7 +211,7 @@ BONUS_LEVELS = (
     LevelSpec(
         key="b3",
         title="Drift pit",
-        tagline="floaty brawling, stingy regen",
+        tagline="Low gravity, slow regen",
         is_bonus=True,
         gravity=(0, 54),
         player_energy=(105, 20, 10, 15, 26),
@@ -222,7 +224,7 @@ BONUS_LEVELS = (
     LevelSpec(
         key="b4",
         title="Thunder well",
-        tagline="Heavy gravity, greedy stamina",
+        tagline="High gravity, greedy stamina",
         is_bonus=True,
         gravity=(0, 158),
         player_energy=(95, 17, 7, 16, 28),
@@ -247,16 +249,18 @@ BONUS_LEVELS = (
     ),
     LevelSpec(
         key="b6",
-        title="Avalanche pit",
-        tagline="max gravity, max chaos",
+        title="Double drop",
+        tagline="two rivals take them out one at a time mat ko or pin",
         is_bonus=True,
-        gravity=(0, 172),
-        player_energy=(92, 16, 7, 16, 27),
-        enemy_energy=(100, 22, 11, 14, 27),
-        enemy_cooldown_scale=0.58,
-        enemy_charge_add=0.12,
+        gravity=(0, 118),
+        player_energy=(100, 18, 8, 16, 28),
+        enemy_energy=(100, 18, 9, 14, 25),
+        enemy_cooldown_scale=0.72,
+        enemy_charge_add=0.04,
         arena_theme="inferno",
-        enemy_spawn_x=452,
+        enemy_spawn_x=400,
+        player_spawn_x=200,
+        second_enemy_spawn_x=600,
     ),
 )
 

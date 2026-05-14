@@ -9,8 +9,15 @@ def _set_shape_collision_type(body, collision_type):
 class RagdollSurfaceContacts:
     """counts when any of ``supported_bodies`` touches shapes of ``surface_collision_types``."""
 
-    def __init__(self, space, surface_collision_types, supported_bodies):
+    def __init__(
+        self,
+        space,
+        surface_collision_types,
+        supported_bodies,
+        corpse_collision_type=None,
+    ):
         self._supported = frozenset(supported_bodies)
+        self._corpse_ct = corpse_collision_type
         self._contact_counts = {}
         if isinstance(surface_collision_types, (tuple, list)):
             types_ = tuple(surface_collision_types)
@@ -29,8 +36,11 @@ class RagdollSurfaceContacts:
         for shape in arbiter.shapes:
             if shape is None or shape.body is None:
                 continue
-            if shape.body in self._supported:
-                return shape.body
+            if shape.body not in self._supported:
+                continue
+            if self._corpse_ct is not None and shape.collision_type == self._corpse_ct:
+                continue
+            return shape.body
         return None
 
     def _begin(self, arbiter, space_, data):

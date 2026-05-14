@@ -48,6 +48,7 @@ while app_running:
     frame_dt = clock.get_time() / 1000
     if frame_dt <= 0:
         frame_dt = 1 / 60
+    frame_dt = min(frame_dt, 0.05)
 
     screen_size = screen.get_size()
     menu_action = None
@@ -66,6 +67,8 @@ while app_running:
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             click_pos = viewport.screen_to_game(event.pos, screen_size)
+            if phase == menu.PLAYING and match is not None:
+                match._aim_seen_play_mousedown = True
             if phase == menu.HOME:
                 menu_action = menu_ui.handle_click(
                     {
@@ -89,15 +92,19 @@ while app_running:
                     if act == "back":
                         menu_action = "goto_home"
                     elif act and act.startswith("main_"):
-                        menu_action = "start_main"
-                        active_main_index = int(act.split("_")[1])
+                        idx = int(act.split("_")[1])
+                        if st.get("dev_mode") or idx < saved_prog["main_unlocked"]:
+                            menu_action = "start_main"
+                            active_main_index = idx
             elif phase == menu.BONUS_SELECT:
                 act = menu_ui.handle_click(None, click_pos)
                 if act == "back":
                     menu_action = "goto_home"
                 elif act and act.startswith("bonus_"):
-                    menu_action = "start_bonus"
-                    active_main_index = int(act.split("_")[1])
+                    idx = int(act.split("_")[1])
+                    if st.get("dev_mode") or idx < saved_prog["bonus_unlocked"]:
+                        menu_action = "start_bonus"
+                        active_main_index = idx
             elif phase == menu.HOW_TO:
                 menu_action = menu_ui.handle_click({"back": "goto_home"}, click_pos)
             elif phase == menu.OPTIONS:
@@ -161,13 +168,12 @@ while app_running:
 
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             menu_ui.career_select_pointer_up()
-            if (
-                phase == menu.PLAYING
-                and match is not None
-                and match.player_supported()
-            ):
-                released_aim = True
-                aim_x, aim_y = viewport.screen_to_game(event.pos, screen_size)
+            if phase == menu.PLAYING and match is not None:
+                if not match._aim_input_primed:
+                    match._aim_input_primed = True
+                elif match.player_supported():
+                    released_aim = True
+                    aim_x, aim_y = viewport.screen_to_game(event.pos, screen_size)
 
     if menu_action == "goto_home":
         phase = menu.HOME
@@ -254,7 +260,13 @@ while app_running:
         player_supported = match.player_supported()
         mouse_held = pygame.mouse.get_pressed()[0]
         hold_aim = False
-        if phase == menu.PLAYING and player_supported and mouse_held:
+        if (
+            phase == menu.PLAYING
+            and player_supported
+            and mouse_held
+            and match._aim_input_primed
+            and match._aim_seen_play_mousedown
+        ):
             hold_aim = True
             aim_x, aim_y = viewport.screen_to_game(pygame.mouse.get_pos(), screen_size)
 
@@ -293,9 +305,23 @@ while app_running:
             energy_bar_height,
             match.enemy_energy.ratio(),
             ENEMY_BODY_RGB,
-            "rival stamina",
+            "rival stamina"
+            if match.enemy_energy_secondary is None
+            else "rival 1 stamina",
             font_small,
         )
+        if match.enemy_energy_secondary is not None:
+            hud.draw_energy_bar(
+                game_surface,
+                viewport.VIEW_WIDTH - energy_bar_width - 18,
+                128,
+                energy_bar_width,
+                energy_bar_height,
+                match.enemy_energy_secondary.ratio(),
+                ENEMY_BODY_RGB,
+                "rival 2 stamina",
+                font_small,
+            )
         hud.draw_level_banner(
             game_surface,
             viewport.VIEW_WIDTH,
